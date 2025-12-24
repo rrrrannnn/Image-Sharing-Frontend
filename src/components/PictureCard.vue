@@ -2,16 +2,16 @@
   <div class="picture-card" @click="handleClick">
     <div class="picture-image-wrapper">
       <img 
-        :src="picture.thumbnailUrl || picture.url" 
-        :alt="picture.name"
+        :src="picture.thumbUrl || picture.imageUrl" 
+        :alt="picture.title"
         class="picture-image"
         @error="handleImageError"
       />
     </div>
     <div class="picture-info">
-      <p class="picture-name">{{ picture.name || '未命名图片' }}</p>
-      <p class="picture-uploader">上传者: {{ picture.user?.userName || '未知' }}</p>
-      <p class="picture-date">上传日期: {{ formatDate(picture.createTime) }}</p>
+      <p class="picture-name">{{ picture.title || 'Untitled Image' }}</p>
+      <p class="picture-uploader">Uploader: {{ picture.uploader?.nickname || 'Unknown' }}</p>
+      <p class="picture-date">Upload Date: {{ formatDate(picture.uploadTime) }}</p>
     </div>
   </div>
 </template>
@@ -30,7 +30,7 @@ const props = defineProps({
 const router = useRouter()
 
 const handleClick = () => {
-  router.push(`/picture/${props.picture.id}`)
+  router.push(`/picture/${props.picture.picId}`)
 }
 
 const imageError = ref(false)
@@ -43,9 +43,9 @@ const handleImageError = (e) => {
 }
 
 const formatDate = (date) => {
-  if (!date) return '未知'
+  if (!date) return 'Unknown'
   const d = new Date(date)
-  return d.toLocaleDateString('zh-CN', {
+  return d.toLocaleDateString('en-US', {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit'
@@ -92,7 +92,7 @@ const formatDate = (date) => {
 .picture-name {
   font-size: 16px;
   font-weight: 600;
-  color: #333;
+  color: #409eff;
   margin-bottom: 8px;
   overflow: hidden;
   text-overflow: ellipsis;

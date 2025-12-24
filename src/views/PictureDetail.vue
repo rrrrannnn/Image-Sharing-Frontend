@@ -5,83 +5,83 @@
       <div v-if="picture" class="detail-content">
         <div class="picture-section">
           <img 
-            :src="picture.originalUrl || picture.url" 
-            :alt="picture.name"
+            :src="picture.imageUrl" 
+            :alt="picture.title"
             class="picture-image"
             @error="handleImageError"
           />
         </div>
         <div class="info-section">
           <div class="info-header">
-            <h2 class="picture-title">{{ picture.name || '未命名图片' }}</h2>
+            <h2 class="picture-title">{{ picture.title || 'Untitled Image' }}</h2>
             <div v-if="isOwner" class="action-buttons">
               <el-button type="primary" @click="showEditDialog = true">
-                编辑
+                Edit
               </el-button>
               <el-button type="danger" @click="handleDelete">
-                删除
+                Delete
               </el-button>
             </div>
           </div>
           <div class="info-item">
-            <span class="info-label">上传者：</span>
-            <span class="info-value">{{ picture.user?.userName || '未知' }}</span>
+            <span class="info-label">Uploader:</span>
+            <span class="info-value">{{ picture.uploader?.nickname || 'Unknown' }}</span>
           </div>
           <div class="info-item">
-            <span class="info-label">上传日期：</span>
-            <span class="info-value">{{ formatDate(picture.createTime) }}</span>
+            <span class="info-label">Upload Date:</span>
+            <span class="info-value">{{ formatDate(picture.uploadTime) }}</span>
           </div>
-          <div class="info-item" v-if="picture.introduction">
-            <span class="info-label">简介：</span>
-            <span class="info-value">{{ picture.introduction }}</span>
+          <div class="info-item" v-if="picture.desc">
+            <span class="info-label">Description:</span>
+            <span class="info-value">{{ picture.desc }}</span>
           </div>
-          <div class="info-item" v-if="picture.category">
-            <span class="info-label">分类：</span>
-            <span class="info-value">{{ picture.category }}</span>
+          <div class="info-item" v-if="picture.tag">
+            <span class="info-label">Category:</span>
+            <span class="info-value">{{ picture.tag }}</span>
           </div>
-          <div class="info-item" v-if="picture.pictureSize">
-            <span class="info-label">文件大小：</span>
-            <span class="info-value">{{ formatFileSize(picture.pictureSize) }}</span>
+          <div class="info-item" v-if="picture.size">
+            <span class="info-label">File Size:</span>
+            <span class="info-value">{{ formatFileSize(picture.size) }}</span>
           </div>
-          <div class="info-item" v-if="picture.pictureWidth && picture.pictureHeight">
-            <span class="info-label">尺寸：</span>
-            <span class="info-value">{{ picture.pictureWidth }} × {{ picture.pictureHeight }}</span>
+          <div class="info-item" v-if="picture.width && picture.height">
+            <span class="info-label">Dimensions:</span>
+            <span class="info-value">{{ picture.width }} × {{ picture.height }}</span>
           </div>
-          <div class="info-item" v-if="picture.pictureFormat">
-            <span class="info-label">格式：</span>
-            <span class="info-value">{{ picture.pictureFormat }}</span>
+          <div class="info-item" v-if="picture.format">
+            <span class="info-label">Format:</span>
+            <span class="info-value">{{ picture.format }}</span>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- 编辑对话框 -->
+    <!-- Edit Dialog -->
     <el-dialog
       v-model="showEditDialog"
-      title="编辑图片信息"
+      title="Edit Image Information"
       width="500px"
       @close="resetEditForm"
     >
       <el-form :model="editForm" :rules="editRules" ref="editFormRef" label-width="80px">
-        <el-form-item label="图片名称" prop="name">
-          <el-input v-model="editForm.name" placeholder="请输入图片名称" />
+        <el-form-item label="Image Name" prop="name">
+          <el-input v-model="editForm.name" placeholder="Please enter image name" />
         </el-form-item>
-        <el-form-item label="简介" prop="introduction">
+        <el-form-item label="Description" prop="introduction">
           <el-input
             v-model="editForm.introduction"
             type="textarea"
             :rows="4"
-            placeholder="请输入简介"
+            placeholder="Please enter description"
           />
         </el-form-item>
-        <el-form-item label="分类" prop="category">
-          <el-input v-model="editForm.category" placeholder="请输入分类" />
+        <el-form-item label="Category" prop="category">
+          <el-input v-model="editForm.category" placeholder="Please enter category" />
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="showEditDialog = false">取消</el-button>
+        <el-button @click="showEditDialog = false">Cancel</el-button>
         <el-button type="primary" @click="handleEdit" :loading="editLoading">
-          保存
+          Save
         </el-button>
       </template>
     </el-dialog>
@@ -114,18 +114,18 @@ const editForm = ref({
 
 const editRules = {
   name: [
-    { required: true, message: '请输入图片名称', trigger: 'blur' }
+    { required: true, message: 'Please enter image name', trigger: 'blur' }
   ]
 }
 
 const isOwner = computed(() => {
-  return userStore.isLoggedIn && picture.value && picture.value.userId === userStore.user?.id
+  return userStore.isLoggedIn && picture.value && picture.value.uploaderId === userStore.user?.uid
 })
 
 const loadPicture = async () => {
   const id = route.params.id
   if (!id) {
-    ElMessage.error('图片ID不存在')
+    ElMessage.error('Image ID does not exist')
     router.push('/')
     return
   }
@@ -134,14 +134,14 @@ const loadPicture = async () => {
   try {
     const data = await getPictureById(id)
     picture.value = data
-    // 初始化编辑表单
+    // Initialize edit form
     editForm.value = {
-      name: data.name || '',
-      introduction: data.introduction || '',
-      category: data.category || ''
+      name: data.title || '',
+      introduction: data.desc || '',
+      category: data.tag || ''
     }
   } catch (error) {
-    ElMessage.error(error.message || '加载图片详情失败')
+    ElMessage.error(error.message || 'Failed to load image details')
     router.push('/')
   } finally {
     loading.value = false
@@ -153,9 +153,9 @@ const handleImageError = (e) => {
 }
 
 const formatDate = (date) => {
-  if (!date) return '未知'
+  if (!date) return 'Unknown'
   const d = new Date(date)
-  return d.toLocaleString('zh-CN', {
+  return d.toLocaleString('en-US', {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
@@ -165,7 +165,7 @@ const formatDate = (date) => {
 }
 
 const formatFileSize = (bytes) => {
-  if (!bytes) return '未知'
+  if (!bytes) return 'Unknown'
   if (bytes < 1024) return bytes + ' B'
   if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB'
   if (bytes < 1024 * 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(2) + ' MB'
@@ -175,9 +175,9 @@ const formatFileSize = (bytes) => {
 const resetEditForm = () => {
   if (picture.value) {
     editForm.value = {
-      name: picture.value.name || '',
-      introduction: picture.value.introduction || '',
-      category: picture.value.category || ''
+      name: picture.value.title || '',
+      introduction: picture.value.desc || '',
+      category: picture.value.tag || ''
     }
   }
   editFormRef.value?.clearValidate()
@@ -191,17 +191,17 @@ const handleEdit = async () => {
       editLoading.value = true
       try {
         await editPicture(
-          picture.value.id,
+          picture.value.picId,
           editForm.value.name,
           editForm.value.introduction,
           editForm.value.category
         )
-        ElMessage.success('编辑成功')
+        ElMessage.success('Edit successful')
         showEditDialog.value = false
-        // 重新加载图片信息
+        // Reload image information
         await loadPicture()
       } catch (error) {
-        ElMessage.error(error.message || '编辑失败')
+        ElMessage.error(error.message || 'Edit failed')
       } finally {
         editLoading.value = false
       }
@@ -212,27 +212,27 @@ const handleEdit = async () => {
 const handleDelete = async () => {
   try {
     await ElMessageBox.confirm(
-      '确定要删除这张图片吗？此操作不可恢复。',
-      '确认删除',
+      'Are you sure you want to delete this image? This action cannot be undone.',
+      'Confirm Delete',
       {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+        confirmButtonText: 'Confirm',
+        cancelButtonText: 'Cancel',
         type: 'warning'
       }
     )
 
     loading.value = true
     try {
-      await deletePicture(picture.value.id)
-      ElMessage.success('删除成功')
+      await deletePicture(picture.value.picId)
+      ElMessage.success('Delete successful')
       router.push('/')
     } catch (error) {
-      ElMessage.error(error.message || '删除失败')
+      ElMessage.error(error.message || 'Delete failed')
     } finally {
       loading.value = false
     }
   } catch {
-    // 用户取消删除
+    // User cancelled deletion
   }
 }
 

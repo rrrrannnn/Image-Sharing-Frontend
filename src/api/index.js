@@ -6,7 +6,7 @@ const api = axios.create({
   withCredentials: true
 })
 
-// 请求拦截器
+// Request interceptor
 api.interceptors.request.use(
   config => {
     return config
@@ -16,14 +16,14 @@ api.interceptors.request.use(
   }
 )
 
-// 响应拦截器
+// Response interceptor
 api.interceptors.response.use(
   response => {
     const res = response.data
     if (res.code === 0) {
       return res.data
     } else {
-      return Promise.reject(new Error(res.message || '请求失败'))
+      return Promise.reject(new Error(res.message || 'Request failed'))
     }
   },
   error => {

@@ -33,19 +33,19 @@ const userStore = useUserStore()
 
 const handleFileChange = async (file) => {
   if (!userStore.isLoggedIn) {
-    ElMessage.warning('请先登录')
+    ElMessage.warning('Please login first')
     return
   }
 
   uploading.value = true
   try {
     await uploadPicture(file.raw, file.name)
-    ElMessage.success('上传成功')
+    ElMessage.success('Upload successful')
     emit('upload-success')
-    // 清空文件选择
+    // Clear file selection
     uploadRef.value?.clearFiles()
   } catch (error) {
-    ElMessage.error(error.message || '上传失败')
+    ElMessage.error(error.message || 'Upload failed')
   } finally {
     uploading.value = false
   }

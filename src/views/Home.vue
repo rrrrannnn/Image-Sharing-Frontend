@@ -3,13 +3,13 @@
     <NavBar />
     <div class="container">
       <UploadSection @upload-success="handleUploadSuccess" />
-      <!-- <div class="pictures-grid" v-loading="loading">
-        <PictureCard v-for="picture in pictures" :key="picture.id" :picture="picture" />
-      </div> -->
-      <div class="pagination-container">
-        <el-pagination v-model:current-page="currentPage" v-model:page-size="pageSize" :total="total"
+      <div class="pictures-grid" v-loading="loading">
+        <PictureCard v-for="picture in pictures" :key="picture.picId" :picture="picture" />
+      </div>
+      <div class="pagination-container" v-if="total > 0">
+        <el-pagination :current-page="Number(currentPage)" :page-size="Number(pageSize)" :total="Number(total)"
           :page-sizes="[6, 12, 24, 48]" layout="total, sizes, prev, pager, next, jumper" @size-change="handleSizeChange"
-          @current-change="handleCurrentChange" style="justify-content: flex-end; margin-top: 24px; padding: 20px 0;" />
+          @current-change="handleCurrentChange" />
       </div>
     </div>
   </div>
@@ -34,7 +34,7 @@ const total = ref(0)
 const loadPictures = async (resetPage = false) => {
   loading.value = true
   try {
-    // 如果重置页面，先设置为第一页
+    // If reset page, set to first page
     if (resetPage) {
       currentPage.value = 1
     }
@@ -45,10 +45,17 @@ const loadPictures = async (resetPage = false) => {
       sortField: 'createTime',
       sortOrder: 'descend'
     })
+
     pictures.value = result.records || []
-    total.value = result.total || 0
+    // Ensure total is a number
+    const totalValue = result.total
+    if (totalValue !== undefined && totalValue !== null) {
+      total.value = Number(totalValue)
+    } else {
+      total.value = 0
+    }
   } catch (error) {
-    ElMessage.error(error.message || '加载图片列表失败')
+    ElMessage.error(error.message || 'Failed to load image list')
   } finally {
     loading.value = false
   }
@@ -66,7 +73,7 @@ const handleCurrentChange = (page) => {
 }
 
 const handleUploadSuccess = () => {
-  // 上传成功后，重置到第一页并重新加载
+  // After successful upload, reset to first page and reload
   loadPictures(true)
 }
 
@@ -79,7 +86,7 @@ onMounted(async () => {
 <style scoped>
 .home {
   min-height: 100vh;
-  background-color: #f5f5f5;
+  background-color: #e6f3ff;
 }
 
 .container {
@@ -93,6 +100,13 @@ onMounted(async () => {
   grid-template-columns: repeat(3, 1fr);
   gap: 24px;
   margin-bottom: 24px;
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 24px;
+  padding: 20px 0;
 }
 
 @media (max-width: 768px) {

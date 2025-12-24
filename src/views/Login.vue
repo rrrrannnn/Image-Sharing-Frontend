@@ -4,52 +4,49 @@
     <div class="container">
       <div class="login-card">
         <el-tabs v-model="activeTab" class="login-tabs">
-          <el-tab-pane label="登录" name="login">
+          <el-tab-pane label="Login" name="login">
             <el-form :model="loginForm" :rules="loginRules" ref="loginFormRef" label-width="80px">
-              <el-form-item label="账号" prop="userAccount">
-                <el-input v-model="loginForm.userAccount" placeholder="请输入账号" />
+              <el-form-item label="Account" prop="userAccount">
+                <el-input v-model="loginForm.userAccount" placeholder="Please enter account" />
               </el-form-item>
-              <el-form-item label="密码" prop="userPassword">
+              <el-form-item label="Password" prop="userPassword">
                 <el-input 
                   v-model="loginForm.userPassword" 
                   type="password" 
-                  placeholder="请输入密码"
+                  placeholder="Please enter password"
                   @keyup.enter="handleLogin"
                 />
               </el-form-item>
               <el-form-item>
                 <el-button type="primary" @click="handleLogin" :loading="loginLoading" style="width: 100%">
-                  登录
+                  Login
                 </el-button>
               </el-form-item>
             </el-form>
           </el-tab-pane>
-          <el-tab-pane label="注册" name="register">
+          <el-tab-pane label="Register" name="register">
             <el-form :model="registerForm" :rules="registerRules" ref="registerFormRef" label-width="80px">
-              <el-form-item label="账号" prop="userAccount">
-                <el-input v-model="registerForm.userAccount" placeholder="请输入账号" />
+              <el-form-item label="Account" prop="userAccount">
+                <el-input v-model="registerForm.userAccount" placeholder="Please enter account" />
               </el-form-item>
-              <el-form-item label="昵称" prop="userName">
-                <el-input v-model="registerForm.userName" placeholder="请输入昵称" />
-              </el-form-item>
-              <el-form-item label="密码" prop="userPassword">
+              <el-form-item label="Password" prop="userPassword">
                 <el-input 
                   v-model="registerForm.userPassword" 
                   type="password" 
-                  placeholder="请输入密码"
+                  placeholder="Please enter password"
                 />
               </el-form-item>
-              <el-form-item label="确认密码" prop="checkPassword">
+              <el-form-item label="Confirm Password" prop="checkPassword">
                 <el-input 
                   v-model="registerForm.checkPassword" 
                   type="password" 
-                  placeholder="请再次输入密码"
+                  placeholder="Please enter password again"
                   @keyup.enter="handleRegister"
                 />
               </el-form-item>
               <el-form-item>
                 <el-button type="primary" @click="handleRegister" :loading="registerLoading" style="width: 100%">
-                  注册
+                  Register
                 </el-button>
               </el-form-item>
             </el-form>
@@ -84,14 +81,13 @@ const loginForm = ref({
 
 const registerForm = ref({
   userAccount: '',
-  userName: '',
   userPassword: '',
   checkPassword: ''
 })
 
 const validateCheckPassword = (rule, value, callback) => {
   if (value !== registerForm.value.userPassword) {
-    callback(new Error('两次输入的密码不一致'))
+    callback(new Error('Passwords do not match'))
   } else {
     callback()
   }
@@ -99,27 +95,24 @@ const validateCheckPassword = (rule, value, callback) => {
 
 const loginRules = {
   userAccount: [
-    { required: true, message: '请输入账号', trigger: 'blur' }
+    { required: true, message: 'Please enter account', trigger: 'blur' }
   ],
   userPassword: [
-    { required: true, message: '请输入密码', trigger: 'blur' }
+    { required: true, message: 'Please enter password', trigger: 'blur' }
   ]
 }
 
 const registerRules = {
   userAccount: [
-    { required: true, message: '请输入账号', trigger: 'blur' },
-    { min: 4, message: '账号长度至少4个字符', trigger: 'blur' }
-  ],
-  userName: [
-    { required: true, message: '请输入昵称', trigger: 'blur' }
+    { required: true, message: 'Please enter account', trigger: 'blur' },
+    { min: 4, message: 'Account must be at least 4 characters', trigger: 'blur' }
   ],
   userPassword: [
-    { required: true, message: '请输入密码', trigger: 'blur' },
-    { min: 6, message: '密码长度至少6个字符', trigger: 'blur' }
+    { required: true, message: 'Please enter password', trigger: 'blur' },
+    { min: 6, message: 'Password must be at least 6 characters', trigger: 'blur' }
   ],
   checkPassword: [
-    { required: true, message: '请再次输入密码', trigger: 'blur' },
+    { required: true, message: 'Please enter password again', trigger: 'blur' },
     { validator: validateCheckPassword, trigger: 'blur' }
   ]
 }
@@ -133,10 +126,10 @@ const handleLogin = async () => {
       try {
         const userData = await login(loginForm.value.userAccount, loginForm.value.userPassword)
         userStore.setUser(userData)
-        ElMessage.success('登录成功')
+        ElMessage.success('Login successful')
         router.push('/')
       } catch (error) {
-        ElMessage.error(error.message || '登录失败')
+        ElMessage.error(error.message || 'Login failed')
       } finally {
         loginLoading.value = false
       }
@@ -153,15 +146,14 @@ const handleRegister = async () => {
       try {
         await register(
           registerForm.value.userAccount,
-          registerForm.value.userName,
           registerForm.value.userPassword,
           registerForm.value.checkPassword
         )
-        ElMessage.success('注册成功，请登录')
+        ElMessage.success('Registration successful, please login')
         activeTab.value = 'login'
         loginForm.value.userAccount = registerForm.value.userAccount
       } catch (error) {
-        ElMessage.error(error.message || '注册失败')
+        ElMessage.error(error.message || 'Registration failed')
       } finally {
         registerLoading.value = false
       }

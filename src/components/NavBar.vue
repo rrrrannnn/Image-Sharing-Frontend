@@ -5,23 +5,29 @@
         <h1 class="navbar-title">Image Sharing Platform</h1>
       </div>
       <div class="navbar-right">
-        <el-button @click="$router.push('/')" :type="currentPath === '/' ? 'primary' : 'default'">
+        <el-button 
+          @click="$router.push('/')" 
+          :class="currentPath === '/' ? 'active-btn' : 'nav-btn'"
+        >
           Home
         </el-button>
-        <el-button @click="$router.push('/my-images')" :type="currentPath === '/my-images' ? 'primary' : 'default'">
+        <el-button 
+          @click="$router.push('/my-images')" 
+          :class="currentPath === '/my-images' ? 'active-btn' : 'nav-btn'"
+        >
           My Image
         </el-button>
         <el-button 
           v-if="!isLoggedIn"
           @click="$router.push('/login')" 
-          :type="currentPath === '/login' ? 'primary' : 'default'"
+          :class="currentPath === '/login' ? 'active-btn' : 'nav-btn'"
         >
           Login/Register
         </el-button>
         <el-button 
           v-else
           @click="handleLogout" 
-          type="default"
+          class="nav-btn"
         >
           Logout
         </el-button>
@@ -48,10 +54,10 @@ const handleLogout = async () => {
   try {
     await logout()
     userStore.clearUser()
-    ElMessage.success('登出成功')
+    ElMessage.success('Logout successful')
     router.push('/')
   } catch (error) {
-    ElMessage.error(error.message || '登出失败')
+    ElMessage.error(error.message || 'Logout failed')
   }
 }
 
@@ -86,13 +92,32 @@ onMounted(() => {
 .navbar-title {
   font-size: 24px;
   font-weight: 600;
-  color: #333;
+  color: #409eff;
   margin: 0;
 }
 
 .navbar-right {
   display: flex;
   gap: 12px;
+}
+
+.nav-btn {
+  border-color: #409eff;
+  color: #409eff;
+  background-color: #fff;
+}
+
+.nav-btn:hover {
+  border-color: #66b1ff;
+  color: #66b1ff;
+  background-color: #ecf5ff;
+}
+
+.active-btn {
+  border-color: #409eff;
+  color: #409eff;
+  background-color: #fff;
+  font-weight: 600;
 }
 </style>
 

@@ -1,18 +1,18 @@
 import api from './index'
 
-// 分页获取图片列表
+// Get paginated image list
 export function getPictureList(params) {
   return api.post('/picture/list/page/vo', params)
 }
 
-// 获取图片详情
+// Get image details
 export function getPictureById(id) {
   return api.get('/picture/get/vo', {
     params: { id }
   })
 }
 
-// 上传图片
+// Upload image
 export function uploadPicture(file, pictureName) {
   const formData = new FormData()
   formData.append('file', file)
@@ -24,7 +24,7 @@ export function uploadPicture(file, pictureName) {
   })
 }
 
-// 编辑图片
+// Edit image
 export function editPicture(id, name, introduction, category) {
   return api.post('/picture/edit', {
     id,
@@ -34,7 +34,7 @@ export function editPicture(id, name, introduction, category) {
   })
 }
 
-// 删除图片
+// Delete image
 export function deletePicture(id) {
   return api.post('/picture/delete', {
     id

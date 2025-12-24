@@ -1,6 +1,6 @@
 import api from './index'
 
-// 用户登录
+// User login
 export function login(userAccount, userPassword) {
   return api.post('/user/login', {
     userAccount,
@@ -8,22 +8,21 @@ export function login(userAccount, userPassword) {
   })
 }
 
-// 用户注册
-export function register(userAccount, userName, userPassword, checkPassword) {
+// User register
+export function register(userAccount, userPassword, checkPassword) {
   return api.post('/user/register', {
     userAccount,
-    userName,
     userPassword,
     checkPassword
   })
 }
 
-// 获取当前登录用户
+// Get current logged in user
 export function getLoginUser() {
   return api.get('/user/get/login')
 }
 
-// 用户登出
+// User logout
 export function logout() {
   return api.post('/user/logout')
 }
